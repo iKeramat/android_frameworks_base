@@ -81,7 +81,6 @@ import java.util.Map;
  */
 public class MobileSignalController extends SignalController<MobileState, MobileIconGroup> {
 
-    private static final String IMS_STATUS_CHANGED = "android.intent.action.IMS_REGISTRATION_CHANGED";
     private static final SimpleDateFormat SSDF = new SimpleDateFormat("MM-dd HH:mm:ss.SSS");
     private static final int STATUS_HISTORY_SIZE = 64;
     private static final int IMS_TYPE_WWAN = 1;
@@ -187,14 +186,12 @@ public class MobileSignalController extends SignalController<MobileState, Mobile
                 }
             }
             mCurrentState.imsRegistered = true;
-            mContext.sendBroadcast(new Intent(IMS_STATUS_CHANGED));
             notifyListenersIfNecessary();
         }
 
         @Override
         public void onRegistering(ImsRegistrationAttributes attr) {
             mCurrentState.imsRegistered = false;
-            mContext.sendBroadcast(new Intent(IMS_STATUS_CHANGED));
             notifyListenersIfNecessary();
         }
 
@@ -208,7 +205,6 @@ public class MobileSignalController extends SignalController<MobileState, Mobile
                     getCallStrengthDescription(mLastWwanLevel, /* isWifi= */false));
             notifyCallStateChange(statusIcon, mSubscriptionInfo.getSubscriptionId());
             mCurrentState.imsRegistered = false;
-            mContext.sendBroadcast(new Intent(IMS_STATUS_CHANGED));
             notifyListenersIfNecessary();
         }
     };
@@ -316,6 +312,12 @@ public class MobileSignalController extends SignalController<MobileState, Mobile
         // Only show this as not having connectivity if we are default.
         mCurrentState.inetCondition = (isValidated || !mCurrentState.isDefault) ? 1 : 0;
         notifyListenersIfNecessary();
+    }
+
+    @Override
+    void notifyListenersIfNecessary() {
+        mNetworkController.updateImsIcon();
+        super.notifyListenersIfNecessary();
     }
 
     void setCarrierNetworkChangeMode(boolean carrierNetworkChangeMode) {
