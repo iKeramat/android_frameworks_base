@@ -51,8 +51,6 @@ public class StatusBarSignalPolicy implements SignalCallback,
     private static final String TAG = "StatusBarSignalPolicy";
     private static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
 
-    private static final String HIDE_QS_CALL_STRENGTH = "hide_qs_call_strength";
-
     private final String mSlotAirplane;
     private final String mSlotMobile;
     private final String mSlotWifi;
@@ -121,8 +119,7 @@ public class StatusBarSignalPolicy implements SignalCallback,
             return;
         }
         mInitialized = true;
-        mTunerService.addTunable(this, StatusBarIconController.ICON_HIDE_LIST,
-                HIDE_QS_CALL_STRENGTH);
+        mTunerService.addTunable(this, StatusBarIconController.ICON_HIDE_LIST);
         mNetworkController.addCallback(this);
         mSecurityController.addCallback(this);
     }
@@ -245,19 +242,14 @@ public class StatusBarSignalPolicy implements SignalCallback,
             state.callStrengthResId = statusIcon.icon;
             state.callStrengthDescription = statusIcon.contentDescription;
         }
-        boolean hideCallStrength = mTunerService.getValue(HIDE_QS_CALL_STRENGTH, 0) == 0;
-        if (mCarrierConfigTracker.getCallStrengthConfig(subId) && !hideCallStrength) {
+        if (mCarrierConfigTracker.getCallStrengthConfig(subId)) {
             mIconController.setCallStrengthIcons(mSlotCallStrength,
                     CallIndicatorIconState.copyStates(mCallIndicatorStates));
         } else {
             mIconController.removeIcon(mSlotCallStrength, subId);
         }
-        if (!hideCallStrength) {
-            mIconController.setNoCallingIcons(mSlotNoCalling,
+        mIconController.setNoCallingIcons(mSlotNoCalling,
                 CallIndicatorIconState.copyStates(mCallIndicatorStates));
-        } else {
-            mIconController.removeIcon(mSlotNoCalling, subId);
-        }
     }
 
     @Override
@@ -283,7 +275,6 @@ public class StatusBarSignalPolicy implements SignalCallback,
         state.roaming = indicators.roaming;
         state.activityIn = indicators.activityIn && mActivityEnabled;
         state.activityOut = indicators.activityOut && mActivityEnabled;
-        state.volteId = indicators.volteId;
 
         if (DEBUG) {
             Log.d(TAG, "MobileIconStates: "
@@ -617,7 +608,6 @@ public class StatusBarSignalPolicy implements SignalCallback,
         public boolean roaming;
         public boolean needsLeadingPadding;
         public CharSequence typeContentDescription;
-        public int volteId;
 
         private MobileIconState(int subId) {
             super();
@@ -639,7 +629,6 @@ public class StatusBarSignalPolicy implements SignalCallback,
                     && showTriangle == that.showTriangle
                     && roaming == that.roaming
                     && needsLeadingPadding == that.needsLeadingPadding
-                    && volteId == that.volteId
                     && Objects.equals(typeContentDescription, that.typeContentDescription);
         }
 
@@ -666,7 +655,6 @@ public class StatusBarSignalPolicy implements SignalCallback,
             other.roaming = roaming;
             other.needsLeadingPadding = needsLeadingPadding;
             other.typeContentDescription = typeContentDescription;
-            other.volteId = volteId;
         }
 
         private static List<MobileIconState> copyStates(List<MobileIconState> inStates) {
@@ -683,7 +671,7 @@ public class StatusBarSignalPolicy implements SignalCallback,
         @Override public String toString() {
             return "MobileIconState(subId=" + subId + ", strengthId=" + strengthId
                     + ", showTriangle=" + showTriangle + ", roaming=" + roaming
-                    + ", typeId=" + typeId + ", visible=" + visible + ", volteId=" + volteId + ")";
+                    + ", typeId=" + typeId + ", visible=" + visible + ")";
         }
     }
 }
