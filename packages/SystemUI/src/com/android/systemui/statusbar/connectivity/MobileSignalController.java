@@ -117,7 +117,6 @@ public class MobileSignalController extends SignalController<MobileState, Mobile
     private int mMobileStatusHistoryIndex;
 
     private int mCallState = TelephonyManager.CALL_STATE_IDLE;
-    private boolean mShowVolteIcon;
     private boolean mIsVowifiAvailable;
 
     private final MobileStatusTracker.Callback mMobileCallback =
@@ -260,8 +259,6 @@ public class MobileSignalController extends SignalController<MobileState, Mobile
                 updateTelephony();
             }
         };
-
-        mShowVolteIcon = mContext.getResources().getBoolean(R.bool.config_display_volte);
 
         mImsMmTelManager = ImsMmTelManager.createForSubscriptionId(info.getSubscriptionId());
         mMobileStatusTracker = new MobileStatusTracker(mPhone, receiverLooper,
