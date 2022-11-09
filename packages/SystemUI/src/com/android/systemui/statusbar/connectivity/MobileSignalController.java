@@ -538,7 +538,7 @@ public class MobileSignalController extends SignalController<MobileState, Mobile
             boolean showDataIconStatusBar = (mCurrentState.dataConnected || dataDisabled)
                     && (mCurrentState.dataSim && mCurrentState.isDefault);
             typeIcon =
-                    ((showDataIconStatusBar || mConfig.alwaysShowDataRatIcon) && getVolteResId() == 0) ? dataTypeIcon : 0;
+                    ((showDataIconStatusBar || mConfig.alwaysShowDataRatIcon) && getVolteVowifiResId() == 0) ? dataTypeIcon : 0;
             showDataIconStatusBar |= mCurrentState.roaming;
             statusIcon = new IconState(
                     showDataIconStatusBar && !mCurrentState.airplaneMode,
@@ -553,7 +553,7 @@ public class MobileSignalController extends SignalController<MobileState, Mobile
             boolean showDataIconInStatusBar =
                     (mCurrentState.dataConnected && mCurrentState.isDefault) || dataDisabled;
             typeIcon =
-                    ((showDataIconInStatusBar || mConfig.alwaysShowDataRatIcon) && getVolteResId() == 0) ? dataTypeIcon : 0;
+                    ((showDataIconInStatusBar || mConfig.alwaysShowDataRatIcon) && getVolteVowifiResId() == 0) ? dataTypeIcon : 0;
             showTriangle = mCurrentState.enabled && !mCurrentState.airplaneMode;
         }
 
@@ -1026,8 +1026,7 @@ public class MobileSignalController extends SignalController<MobileState, Mobile
     private final BroadcastReceiver mVolteSwitchObserver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             Log.d(mTag, "action=" + intent.getAction());
-            if (mShowVolteIcon) {
-                notifyListeners();
-            }
+            notifyListeners();
+        }
     };
 }
